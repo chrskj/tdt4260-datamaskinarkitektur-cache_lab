@@ -1,0 +1,32 @@
+#!/bin/bash
+
+SCRIPT_DIR=$(readlink -f "$(dirname $0)/..")
+
+[ $# -eq 0 ] && {
+	target=$(readlink -f "./")
+} || {
+	target=$(readlink -f "$1")
+}
+
+[ -f "$target"/avdark-cache.cpp ] && {
+	echo "Existing implementation '$1/avdark-cache.cpp' found!" >&2
+	exit 1
+}
+
+[ -f "$target" ] && {
+	echo "Target '$1' must be a directory!" >&2
+	exit 1
+}
+
+[ ! -d "$target" ] && {
+	mkdir -p "$target"
+}
+
+cp -rv ${SCRIPT_DIR}/cache/* "$target"/ && {
+	echo "CACHE_FRAMEWORK=${SCRIPT_DIR}" > "$target"/FRAMEWORK
+	echo "Cache setup complete under '$target/"
+	exit 0
+} || {
+	echo "Canceled!" >&2
+	exit 1
+}
